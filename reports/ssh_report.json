@@ -1,0 +1,7 @@
+{
+    "ssh": {
+        "PermitRootLogin": "prohibit-password",
+        "PasswordAuthentication": "yes"
+    },
+    "firewall": {}
+}
