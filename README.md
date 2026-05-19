@@ -7,10 +7,10 @@ Simple Linux security auditing tool written in Python.
 
 + SSH configuration audit 
 + JSON reporting 
-+ Security scoring ## Usage bash
++ Security scoring 
 
 
-### Usage: ###
+### Usage Bash : ###
 
 python3 audit.py --scan all --output report.json 
 
