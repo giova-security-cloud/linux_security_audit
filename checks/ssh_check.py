@@ -19,23 +19,26 @@ def ssh_file_search(ssh_c):
         print(f"Error checking file: {e}")
 
 def ssh_audit(search):
-    ssh_report={}
-    with open(search , 'r') as file:
+    try:
+        ssh_report={}
+        with open(search , 'r') as file:
 
-        for param in file:
-        
-            if "PermitRootLogin" in param:  
-                words=[ word.lstrip('#') for word in param.strip().split() ]
-                if len(words)==2:
-                    ssh_report.update({words[0]:words[1]})
-            if "PasswordAuthentication" in param:  
-                words=[ word.lstrip('#') for word in param.strip().split() ]
-                if len(words)==2:
-                    ssh_report.update({words[0]:words[1]})
-    
-    file.close()
-    
-    return ssh_report 
+            for param in file:
             
+                if "PermitRootLogin" in param:  
+                    words=[ word.lstrip('#') for word in param.strip().split() ]
+                    if len(words)==2:
+                        ssh_report.update({words[0]:words[1]})
+                if "PasswordAuthentication" in param:  
+                    words=[ word.lstrip('#') for word in param.strip().split() ]
+                    if len(words)==2:
+                        ssh_report.update({words[0]:words[1]})
+        
+        file.close()
+        
+        return ssh_report 
+    
+    except FileNotFoundError:
+        return {"error" : "sshd_config file not found"}
 
 
