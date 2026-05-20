@@ -4,9 +4,9 @@ import subprocess
 import os
 
 
-def make_report(ssh_data):
+def make_report(ssh_data, firewall_data):
     if ssh_data:
-        r_result={"ssh":ssh_data , "firewall":{} } 
+        r_result={"ssh":ssh_data , "firewall":firewall_data} 
     return r_result
 
 

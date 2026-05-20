@@ -18,9 +18,19 @@ def read_report(filename):
 
 def make_score(report):
     score=0  
-    for i,j in report["ssh"].items():
+    #SSH score
+    for i,j in list(report["ssh"].items()):
         if "no" in j:
-            score=score+50
-            print(i + " +50")
-   
-    print("SCORE = 0")
+            score+=50
+            report["ssh"].update({"ssh_score":"50"})
+            print(i + " : +" + str(score))
+  
+    #Firewall score
+    for k,l in report["firewall"].items():
+        if "firewall_score" in k:
+            print(report["firewall"]["tool_detected"] + " : +" + str(l))
+            score+=l 
+            break
+  
+    #Total Score
+    print("Total Score = " + str(score))

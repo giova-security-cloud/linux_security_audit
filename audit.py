@@ -1,11 +1,6 @@
 import argparse
-import sys
-import getopt
-import socket
-import os
-import datetime
-import struct
 import checks.ssh_check as sshp 
+import checks.firewall_check as frwlp
 import reports.reporter as rprt
 import utils.scoring as scor
 
@@ -30,8 +25,13 @@ def run_ssh_check():
    return ssh_state
 
 
-def report(r_name, ssh_audit):
-    r_result=rprt.make_report(ssh_audit)
+def run_firewall_check():
+   #search firewall parameters
+   firewall_state=frwlp.firewall_audit()
+   return firewall_state
+
+def report(r_name, ssh_audit, firewall_audit):
+    r_result=rprt.make_report(ssh_audit, firewall_audit)
     rprt.save_report(r_name, r_result)
 
 
@@ -53,6 +53,7 @@ if __name__ == "__main__":
     
     if args.scan=="all" and args.output :
         ssh_audit=run_ssh_check()
-        report(args.output, ssh_audit)
+        firewall_audit=run_firewall_check()
+        report(args.output, ssh_audit, firewall_audit)
         scoring(args.output)
 
