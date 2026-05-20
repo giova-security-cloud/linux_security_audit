@@ -20,7 +20,9 @@ def ssh_file_search(ssh_c):
 
 def ssh_audit(search):
     try:
+        ssh_score=0
         ssh_report={}
+
         with open(search , 'r') as file:
 
             for param in file:
