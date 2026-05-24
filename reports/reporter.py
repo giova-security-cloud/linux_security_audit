@@ -3,13 +3,6 @@ import sys
 import subprocess
 import os
 
-
-def make_report(ssh_data, firewall_data):
-    if ssh_data:
-        r_result={"ssh":ssh_data , "firewall":firewall_data} 
-    return r_result
-
-
 def save_report(filename, r_result):
     try:
         print("[+] Save the report " + filename + " in the reports directory.")

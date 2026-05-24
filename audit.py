@@ -1,6 +1,7 @@
 import argparse
 import checks.ssh_check as sshp 
 import checks.firewall_check as frwlp
+import checks.ports_check as prts 
 import reports.reporter as rprt
 import utils.scoring as scor
 
@@ -30,15 +31,21 @@ def run_firewall_check():
    firewall_state=frwlp.firewall_audit()
    return firewall_state
 
-def report(r_name, ssh_audit, firewall_audit):
-    r_result=rprt.make_report(ssh_audit, firewall_audit)
-    rprt.save_report(r_name, r_result)
+def run_ports_check(ports):
+    if "all" in ports:
+        #search risky ports
+        ports_state= prts.ports_audit()
+        #results["ports"] = prts.ports_audit()
+        return ports_state
+def report(r_name, audit_data):
+    rprt.save_report(r_name, audit_data)
 
 
 def scoring(report_f):
-    score=scor.read_report(report_f)
-    scor.make_score(score)
-
+    out_report=scor.read_report(report_f)
+    score=scor.make_score(out_report)
+    print("Total Score : " + str(score))
+    
 if __name__ == "__main__":
 
     parser= argparse.ArgumentParser(description = 'Linux Audit Security Tool',
@@ -50,10 +57,15 @@ if __name__ == "__main__":
     parser.add_argument("--output", 
                                 help="Output filename.json to create a report.")
     args = parser.parse_args()
-    
+   
+    audit={"ssh":{},
+           "firewall":{},
+           "ports":{}
+            }
     if args.scan=="all" and args.output :
-        ssh_audit=run_ssh_check()
-        firewall_audit=run_firewall_check()
-        report(args.output, ssh_audit, firewall_audit)
+        audit["ssh"]=run_ssh_check()
+        audit["firewall"]=run_firewall_check()
+        audit["ports"]=run_ports_check(args.scan)
+        report(args.output, audit)
         scoring(args.output)
 

@@ -16,21 +16,11 @@ def read_report(filename):
         sys.exit()
 
 
-def make_score(report):
-    score=0  
-    #SSH score
-    for i,j in list(report["ssh"].items()):
-        if "no" in j:
-            score+=50
-            report["ssh"].update({"ssh_score":"50"})
-            print(i + " : +" + str(score))
-  
-    #Firewall score
-    for k,l in report["firewall"].items():
-        if "firewall_score" in k:
-            print(report["firewall"]["tool_detected"] + " : +" + str(l))
-            score+=l 
-            break
-  
-    #Total Score
-    print("Total Score = " + str(score))
+def make_score(report:dict) -> int:
+    score=100
+    
+    for check in report.values():    
+        score += check.get("audit_score", 0) 
+    return max(0, score)  # max global at 0
+
+

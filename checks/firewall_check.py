@@ -3,11 +3,12 @@ import subprocess
 RISKY_PORTS = {22, 23, 3389, 5900, 21, 25, 110, 3306, 5432}
 
 def firewall_audit():
+    display_score=0
     result = {
         "tool_detected": None,
         "status": "inactive",
         "rules_count": 0,
-        "firewall_score": 0
+        "audit_score": 0
     }
 
     for tool in ["ufw", "firewalld", "iptables"]:
@@ -18,7 +19,8 @@ def firewall_audit():
                     result["tool_detected"] = "ufw"
                     result["status"] = "active"
                     result["rules_count"] = out.count("ALLOW") + out.count("DENY")
-                    result["firewall_score"] = 30
+                    result["audit_score"] = 30
+                    display_score+= result.get("audit_score")
                     break
 
             elif tool == "firewalld":
@@ -26,7 +28,8 @@ def firewall_audit():
                 if "running" in out.lower():
                     result["tool_detected"] = "firewalld"
                     result["status"] = "active"
-                    result["firewall_score"] = 30
+                    result["audit_score"] = 30
+                    display_score+= result.get("audit_score")
                     break
 
             elif tool == "iptables":
@@ -36,10 +39,12 @@ def firewall_audit():
                     result["tool_detected"] = "iptables"
                     result["status"] = "active"
                     result["rules_count"] = len(lines)
-                    result["firewall_score"] = 20
+                    result["audit_score"] = 20
+                    display_score+= result.get("audit_score")
                     break
 
         except (subprocess.CalledProcessError, FileNotFoundError):
             continue
-
+    
+    print("firewall score: " + str(display_score))
     return result

@@ -20,7 +20,7 @@ def ssh_file_search(ssh_c):
 
 def ssh_audit(search):
     try:
-        ssh_score=0
+        audit_score=0
         ssh_report={}
 
         with open(search , 'r') as file:
@@ -28,15 +28,23 @@ def ssh_audit(search):
             for param in file:
             
                 if "PermitRootLogin" in param:  
-                    words=[ word.lstrip('#') for word in param.strip().split() ]
+                    words=[ word.lstrip('#') for word in param.strip().split()]
                     if len(words)==2:
                         ssh_report.update({words[0]:words[1]})
+                        if "no" in words[1]:
+                            audit_score+=50
                 if "PasswordAuthentication" in param:  
-                    words=[ word.lstrip('#') for word in param.strip().split() ]
+                    words=[ word.lstrip('#') for word in param.strip().split()]
                     if len(words)==2:
                         ssh_report.update({words[0]:words[1]})
-        
+                        if "no" in words[1]:
+                            audit_score+= 50        
         file.close()
+
+        ssh_report["audit_score"]=audit_score
+
+        #Display score
+        print("ssh score: " + str(audit_score)) 
         
         return ssh_report 
     
