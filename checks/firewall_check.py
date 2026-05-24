@@ -1,3 +1,5 @@
+# check/firewall_check.py
+
 import subprocess
 
 RISKY_PORTS = {22, 23, 3389, 5900, 21, 25, 110, 3306, 5432}
