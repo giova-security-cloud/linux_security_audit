@@ -2,6 +2,7 @@ import argparse
 import checks.ssh_check as sshp 
 import checks.firewall_check as frwlp
 import checks.ports_check as prts 
+import checks.suid_check as suif
 import reports.reporter as rprt
 import utils.scoring as scor
 
@@ -9,11 +10,16 @@ import utils.scoring as scor
 def validate_ports(value):
     try:
         if value == 'all':
+            
             return value
+        
         port= int(value)
         if 1 <= port <= 65535:
+            
             return port
+        
         raise ValueError
+    
     except ValueError:
         raise argparse.ArgumentTypeError(f"Invalid port: {value}")
 
@@ -23,20 +29,30 @@ def run_ssh_check():
    ssh_c="sshd_config"
    search=str(sshp.ssh_file_search(ssh_c))
    ssh_state=sshp.ssh_audit(search)
+   
    return ssh_state
 
 
 def run_firewall_check():
    #search firewall parameters
    firewall_state=frwlp.firewall_audit()
+   
    return firewall_state
+
 
 def run_ports_check(ports):
     if "all" in ports:
         #search risky ports
         ports_state= prts.ports_audit()
-        #results["ports"] = prts.ports_audit()
+        
         return ports_state
+
+def run_suid_check():
+    suid_state=suif.suid_audit()
+
+    return suid_state
+
+
 def report(r_name, audit_data):
     rprt.save_report(r_name, audit_data)
 
@@ -45,7 +61,8 @@ def scoring(report_f):
     out_report=scor.read_report(report_f)
     score=scor.make_score(out_report)
     print("Total Score : " + str(score))
-    
+
+
 if __name__ == "__main__":
 
     parser= argparse.ArgumentParser(description = 'Linux Audit Security Tool',
@@ -60,12 +77,16 @@ if __name__ == "__main__":
    
     audit={"ssh":{},
            "firewall":{},
-           "ports":{}
+           "ports":{},
+           "suid":{}
             }
+    
+    
     if args.scan=="all" and args.output :
         audit["ssh"]=run_ssh_check()
         audit["firewall"]=run_firewall_check()
         audit["ports"]=run_ports_check(args.scan)
+        audit["suid"]=run_suid_check()
         report(args.output, audit)
         scoring(args.output)
 
