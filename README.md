@@ -5,6 +5,7 @@ Simple Linux security auditing tool written in Python.
 + SSH configuration audit
 + Firewall configuration audit
 + IP Ports scan 
++ SUID files audit
 + JSON reporting 
 + Security scoring 
 
