@@ -28,7 +28,7 @@ RISKY_PORTS = {
     27017:"MongoDB often unauthenticated",
 }
 
-def _parse_ss(output: str) -> list[dict]:
+def parse_ss(output: str) -> list[dict]:
     """Parse the output of ss -tuln"""
     ports = []
     for line in output.splitlines():
@@ -57,7 +57,7 @@ def _parse_ss(output: str) -> list[dict]:
     return ports
 
 
-def _parse_nmap(output: str) -> list[dict]:
+def parse_nmap(output: str) -> list[dict]:
     """Parse the output of nmap -sT -p- or nmap --open"""
     ports = []
     for line in output.splitlines():
@@ -74,7 +74,7 @@ def _parse_nmap(output: str) -> list[dict]:
     return ports
 
 
-def _flag_risks(ports: list[dict]) -> list[dict]:
+def flag_risks(ports: list[dict]) -> list[dict]:
     """Add a risk_reason field to sensitive ports"""
     for p in ports:
         p["risk"] = False
@@ -104,7 +104,7 @@ def ports_audit() -> dict:
             stderr=subprocess.DEVNULL,
             text=True
         )
-        ports = _parse_ss(out)
+        ports = parse_ss(out)
         result["method"] = "ss"
 
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -118,7 +118,7 @@ def ports_audit() -> dict:
                 stderr=subprocess.DEVNULL,
                 text=True
             )
-            ports = _parse_nmap(out)
+            ports = parse_nmap(out)
             result["method"] = "nmap"
 
         except (subprocess.CalledProcessError, FileNotFoundError):
@@ -126,7 +126,7 @@ def ports_audit() -> dict:
             return result
 
     # ── Risk analysis ────────────────────────────────────────────────────────
-    ports = _flag_risks(ports)
+    ports = flag_risks(ports)
 
     risky = [p for p in ports if p["risk"]]
 
