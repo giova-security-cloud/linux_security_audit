@@ -17,6 +17,10 @@ def read_report(filename):
 
 
 def make_score(report:dict) -> int:
+    """
+    Compute the global security score based on all check impacts.
+    Starts at 100, applies each check's audit_score, floored at 0.
+    """
     score=100
     
     for check in report.values():    
