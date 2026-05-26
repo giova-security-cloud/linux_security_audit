@@ -60,7 +60,9 @@ def report(r_name, audit_data):
 def scoring(report_f):
     out_report=scor.read_report(report_f)
     score=scor.make_score(out_report)
-    print("Total Score : " + str(score))
+    print(f"\n{'='*40}")
+    print(f"  Security Score : {str(score)} / 100")
+    print(f"{'='*40}\n")
 
 
 if __name__ == "__main__":
