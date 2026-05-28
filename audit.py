@@ -3,9 +3,9 @@ import checks.ssh_check as sshp
 import checks.firewall_check as frwlp
 import checks.ports_check as prts 
 import checks.suid_check as suif
+import checks.permissions_check as prmf 
 import reports.reporter as rprt
 import utils.scoring as scor
-
 
 def validate_ports(value):
     try:
@@ -52,6 +52,10 @@ def run_suid_check():
 
     return suid_state
 
+def run_permissions_check():
+    permissions_state=prmf.permissions_audit()
+
+    return permissions_state
 
 def report(r_name, audit_data):
     rprt.save_report(r_name, audit_data)
@@ -89,6 +93,7 @@ if __name__ == "__main__":
         audit["firewall"]=run_firewall_check()
         audit["ports"]=run_ports_check(args.scan)
         audit["suid"]=run_suid_check()
+        audit["permissions"]=run_permissions_check()
         report(args.output, audit)
         scoring(args.output)
 
