@@ -8,27 +8,10 @@ import checks.services_check as srvcs
 import reports.reporter as rprt
 import utils.scoring as scor
 
-def validate_ports(value):
-    try:
-        if value == 'all':
-            
-            return value
-        
-        port= int(value)
-        if 1 <= port <= 65535:
-            
-            return port
-        
-        raise ValueError
-    
-    except ValueError:
-        raise argparse.ArgumentTypeError(f"Invalid port: {value}")
-
 
 def run_ssh_check():
    #search ssh parameters
-   ssh_c="sshd_config"
-   search=str(sshp.ssh_file_search(ssh_c))
+   search=str(sshp.ssh_file_search())
    ssh_state=sshp.ssh_audit(search)
    
    return ssh_state
@@ -41,12 +24,11 @@ def run_firewall_check():
    return firewall_state
 
 
-def run_ports_check(ports):
-    if "all" in ports:
-        #search risky ports
-        ports_state= prts.ports_audit()
-        
-        return ports_state
+def run_ports_check():
+    #search risky ports
+    ports_state= prts.ports_audit()
+    
+    return ports_state
 
 def run_suid_check():
     suid_state=suif.suid_audit()
@@ -63,7 +45,6 @@ def run_services_check():
 
     return services_state
 
-    return permissions_state
 def report(r_name, audit_data):
     rprt.save_report(r_name, audit_data)
 
@@ -76,18 +57,9 @@ def scoring(report_f):
     print(f"{'='*40}\n")
 
 
-if __name__ == "__main__":
-
-    parser= argparse.ArgumentParser(description = 'Linux Audit Security Tool',
-           usage="python3 ./audit.py --scan [all] or [port] --output report.json")
-
-    parser.add_argument("--scan", type=validate_ports,
-                        help="To scan all ports: [all]. To scan a valid network port number [port].")
-
-    parser.add_argument("--output", 
-                                help="Output filename.json to create a report.")
-    args = parser.parse_args()
-   
+def run_all_check():
+    """Run all available security checks and return the audit results"""
+    
     audit={"ssh":{},
            "firewall":{},
            "ports":{},
@@ -95,15 +67,70 @@ if __name__ == "__main__":
            "permissions":{},
            "services":{}
             }
+
+    print("[*] Starting security audit...\n")
+    print("[*] Running SSH check...")
+    print(f"\n{'/'*40}")
+    audit["ssh"]=run_ssh_check()
+    print(f"\n{'\\'*40}")
+    print("[*] SSH check Done.")
+    print("[*] Running Firewall check...")
+    audit["firewall"]=run_firewall_check()
+    print("[*] Firewall check Done.")
+    print("[*] Running Ports check...")
+    audit["ports"]=run_ports_check()
+    print("[*] Ports check Done.")
+    print("[*] Running SUID Files check...")
+    audit["suid"]=run_suid_check()
+    print("[*] SUID Files check Done.")
+    print("[*] Running Permissions Files check...")
+    audit["permissions"]=run_permissions_check()
+    print("[*] Permission Files check Done.")
+    print("[*] Running Services check...")
+    audit["services"]=run_services_check()
+    print("[*] Services check Done.")
     
+    return audit
+
+def run_single_check(check):
+    """Run ssh security check and return the audit result"""
     
+    checks={"ssh": run_ssh_check,
+            "firewall": run_firewall_check,
+            "ports": run_ports_check,
+            "suid": run_suid_check,
+            "permissions": run_permissions_check,
+            "services": run_services_check
+            }
+
+    if check not in checks:
+        print(f"[-] The selected check '{check}' is not covered.")
+        print(f"[*] Here is the check list available {", ".join(checks.keys())}.")
+        exit(1)
+    
+    return {check:checks[check]()}
+
+
+
+def main():
+    parser= argparse.ArgumentParser(description = 'Linux Audit Security Tool',
+           usage="sudo python3 ./audit.py --scan [all] or [ssh] [firewall] --output report.json")
+
+    parser.add_argument("--scan",
+                        help="To scan all ports: [all]. To scan a valid network port number [port].")
+
+    parser.add_argument("--output", 
+                                help="Output filename.json to create a report.")
+    args = parser.parse_args()
+
     if args.scan=="all" and args.output :
-        audit["ssh"]=run_ssh_check()
-        audit["firewall"]=run_firewall_check()
-        audit["ports"]=run_ports_check(args.scan)
-        audit["suid"]=run_suid_check()
-        audit["permissions"]=run_permissions_check()
-        audit["services"]=run_services_check()
-        report(args.output, audit)
-        scoring(args.output)
+        audit=run_all_check()
+    else:
+        audit=run_single_check(args.scan)
+
+    report(args.output, audit)
+    scoring(args.output)
+
+if __name__ == "__main__":
+    main()
 
