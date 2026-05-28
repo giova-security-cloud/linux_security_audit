@@ -4,6 +4,7 @@ import checks.firewall_check as frwlp
 import checks.ports_check as prts 
 import checks.suid_check as suif
 import checks.permissions_check as prmf 
+import checks.services_check as srvcs 
 import reports.reporter as rprt
 import utils.scoring as scor
 
@@ -57,6 +58,12 @@ def run_permissions_check():
 
     return permissions_state
 
+def run_services_check():
+    services_state=srvcs.services_audit()
+
+    return services_state
+
+    return permissions_state
 def report(r_name, audit_data):
     rprt.save_report(r_name, audit_data)
 
@@ -84,7 +91,9 @@ if __name__ == "__main__":
     audit={"ssh":{},
            "firewall":{},
            "ports":{},
-           "suid":{}
+           "suid":{},
+           "permissions":{},
+           "services":{}
             }
     
     
@@ -94,6 +103,7 @@ if __name__ == "__main__":
         audit["ports"]=run_ports_check(args.scan)
         audit["suid"]=run_suid_check()
         audit["permissions"]=run_permissions_check()
+        audit["services"]=run_services_check()
         report(args.output, audit)
         scoring(args.output)
 
