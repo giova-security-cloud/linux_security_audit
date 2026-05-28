@@ -5,9 +5,10 @@ import struct
 import fnmatch
 import subprocess
 
-def ssh_file_search(ssh_c):
+def ssh_file_search():
     #Search sshd config file
     try:
+            ssh_c="sshd_config"
             ssh_path="find /etc/ -name " + ssh_c + " | tr -d \'\n\'"
             sshconf=subprocess.Popen([ssh_path], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             routput,rerror=sshconf.communicate()
