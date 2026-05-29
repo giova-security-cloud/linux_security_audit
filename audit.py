@@ -70,9 +70,7 @@ def run_all_check():
 
     print("[*] Starting security audit...\n")
     print("[*] Running SSH check...")
-    print(f"\n{'/'*40}")
     audit["ssh"]=run_ssh_check()
-    print(f"\n{'\\'*40}")
     print("[*] SSH check Done.")
     print("[*] Running Firewall check...")
     audit["firewall"]=run_firewall_check()
