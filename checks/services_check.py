@@ -141,7 +141,5 @@ def services_audit() -> dict:
     penalty = min(len(risky) * 15, 60)
     result["audit_score"] = -penalty
 
-    #Display score
-    print("services score : " + str(result["audit_score"]))
 
     return result

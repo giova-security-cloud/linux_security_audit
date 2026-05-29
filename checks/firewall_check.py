@@ -48,5 +48,4 @@ def firewall_audit():
         except (subprocess.CalledProcessError, FileNotFoundError):
             continue
     
-    print("firewall score: " + str(display_score))
     return result

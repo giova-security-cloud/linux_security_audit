@@ -271,7 +271,4 @@ def permissions_audit() -> dict:
     )
     result["audit_score"] = -min(penalty, 60)
     
-    #Display score
-    print("permissions score : " + str(result["audit_score"]))
-
     return result

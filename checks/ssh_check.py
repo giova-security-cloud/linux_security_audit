@@ -44,10 +44,7 @@ def ssh_audit(search):
         file.close()
 
         ssh_report["audit_score"]=audit_score
-
-        #Display score
-        print("ssh score: " + str(audit_score)) 
-        
+ 
         return ssh_report 
     
     except FileNotFoundError:

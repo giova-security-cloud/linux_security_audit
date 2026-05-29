@@ -121,7 +121,5 @@ def suid_audit(root: str = "/") -> dict:
     penalty = min(len(suspicious) * 20, 60)
     result["audit_score"] = -penalty
     
-    #Display score
-    print("suid score: "+ str(result.get("audit_score")))
-    
+ 
     return result

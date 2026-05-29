@@ -138,9 +138,6 @@ def ports_audit() -> dict:
     penalty = min(len(risky) * 10, 50)
     result["audit_score"] = -penalty
     
-    #Display score
-    print("ports score : "+ str(result.get("audit_score")))
-
     return result
 
 

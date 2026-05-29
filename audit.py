@@ -106,6 +106,7 @@ def run_single_check(check):
         print(f"[*] Here is the check list available {", ".join(checks.keys())}.")
         exit(1)
     
+    print(f"[+] {check} score : {checks[check]().get("audit_score")}")
     return {check:checks[check]()}
 
 
