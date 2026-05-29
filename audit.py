@@ -133,7 +133,7 @@ def main():
 
     parser.add_argument("-o", "--output",
                         metavar="FILE",
-                        default=None,
+                        default="report.json",
                         help="Output filename.json to create a report.")
     args = parser.parse_args()
 
