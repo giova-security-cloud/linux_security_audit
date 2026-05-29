@@ -112,13 +112,29 @@ def run_single_check(check):
 
 def main():
     parser= argparse.ArgumentParser(description = 'Linux Audit Security Tool',
-           usage="sudo python3 ./audit.py --scan [all] or [ssh] [firewall] --output report.json")
+            formatter_class=argparse.RawTextHelpFormatter,
+            epilog=(
+            "Examples:\n"
+            "  python3 audit.py --scan all --output report.json\n"
+            "  python3 audit.py --scan ssh --output ssh_report.json\n"
+            "  python3 audit.py --scan ports\n"))
 
-    parser.add_argument("--scan",
-                        help="To scan all ports: [all]. To scan a valid network port number [port].")
+    parser.add_argument("-s", "--scan",
+                        required=True,
+                        metavar="CHECK",
+                        help=("Check to Run. Options=\n"
+                              "all : Run a full audit\n"
+                              "ssh : SSH configuration\n"
+                              "firewall : Firewall status\n"
+                              "ports : Open ports\n"
+                              "suid : SUID files\n"
+                              "permissions : Risky permissions\n"
+                              "services : active services"))
 
-    parser.add_argument("--output", 
-                                help="Output filename.json to create a report.")
+    parser.add_argument("-o", "--output",
+                        metavar="FILE",
+                        default=None,
+                        help="Output filename.json to create a report.")
     args = parser.parse_args()
 
     if args.scan=="all" and args.output :
@@ -128,7 +144,6 @@ def main():
 
     report(args.output, audit)
     scoring(args.output)
-
 if __name__ == "__main__":
     main()
 
