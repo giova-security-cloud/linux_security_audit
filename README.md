@@ -15,6 +15,8 @@ a lightweight, scriptable alternative to heavy audit frameworks.
 | Ports | Identifies open and risky ports via ss or nmap |
 | SUID | Detects suspicious SUID binaries |
 | Permissions | Audits critical file permissions and ownership |
+| Services | Audits active and exposed services |
+
 
 ---
 
@@ -41,6 +43,7 @@ linux-security-audit/
 │   │── ports_check.py     # Open ports detection
 │   │── suid_check.py      # SUID files detection
 │   │── permissions_check.py # Critical file permissions
+│   │── services_check.py # Exposed services audit
 │── reports/
 │   │── reporter.py        # JSON report generation
 │── utils/
@@ -75,6 +78,7 @@ sudo python3 audit.py --scan firewall
 sudo python3 audit.py --scan ports --output ports.json
 sudo python3 audit.py --scan suid
 sudo python3 audit.py --scan permissions
+sudo python3 audit.py --scan services
 ```
 
 ---
@@ -96,6 +100,8 @@ sudo python3 audit.py --scan permissions
 [+] SUID check done
 [*] Running permissions check...
 [+] Permissions check done
+[*] Running services check...
+[+] Services check done
 
 ========================================
   Security Score : 65 / 100
@@ -154,6 +160,18 @@ sudo python3 audit.py --scan permissions
     "wrong_owner": ["/etc/sudoers"],
     "score_impact": -15
   },
+    "services": {
+        "active_services": [
+            "firewalld",
+            "ssh",
+            "vgauth"
+        ],
+        "risky_services": [],
+        "total_active": 3,
+        "total_risky": 0,
+        "score_impact": 0,
+        "error": null
+    },
   "score": 65
 }
 ```
@@ -179,6 +197,8 @@ The tool computes a global security score out of 100.
 | Permissions | Wrong mode | -5 |
 | Permissions | World-readable sensitive | -5 |
 | Permissions | Maximum penalty | -60 |
+| Services | Per exposed services| -15 |
+| Services | Maximum penalty | -60 |
 
 Score is always floored at 0.
 
