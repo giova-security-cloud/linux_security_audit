@@ -110,7 +110,6 @@ def run_single_check(check):
     return {check:checks[check]()}
 
 
-
 def main():
     parser= argparse.ArgumentParser(description = 'Linux Audit Security Tool',
             formatter_class=argparse.RawTextHelpFormatter,
@@ -145,6 +144,7 @@ def main():
 
     report(args.output, audit)
     scoring(args.output)
+
 if __name__ == "__main__":
     main()
 
