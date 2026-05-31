@@ -103,7 +103,7 @@ def run_single_check(check):
 
     if check not in checks:
         print(f"[-] The selected check '{check}' is not covered.")
-        print(f"[*] Here is the check list available {", ".join(checks.keys())}.")
+        print(f"[*] Here is the checks list available {", ".join(checks.keys())}.")
         exit(1)
     
     print(f"[+] {check} score : {checks[check]().get("audit_score")}")
