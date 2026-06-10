@@ -41,6 +41,14 @@ def ssh_audit(search):
                         ssh_report.update({words[0]:words[1]})
                         if "no" in words[1]:
                             audit_score+= 50        
+                if "MaxAuthTries" in param:  
+                    words=[ word.lstrip('#') for word in param.strip().split()]
+                    if len(words)==2:
+                        ssh_report.update({words[0]:int(words[1])})
+                if "ClientAliveInterval" in param:  
+                    words=[ word.lstrip('#') for word in param.strip().split()]
+                    if len(words)==2:
+                        ssh_report.update({words[0]:int(words[1])})
         file.close()
 
         ssh_report["audit_score"]=audit_score
