@@ -1,4 +1,5 @@
 import argparse
+import logging
 import checks.ssh_check as sshp 
 import checks.firewall_check as frwlp
 import checks.ports_check as prts 
@@ -7,13 +8,13 @@ import checks.permissions_check as prmf
 import checks.services_check as srvcs 
 import reports.reporter as rprt
 import utils.scoring as scor
+import utils.recommandations as reco
 
 
 def run_ssh_check():
    #search ssh parameters
    search=str(sshp.ssh_file_search())
    ssh_state=sshp.ssh_audit(search)
-   
    return ssh_state
 
 
@@ -22,7 +23,6 @@ def run_firewall_check():
    firewall_state=frwlp.firewall_audit()
    
    return firewall_state
-
 
 def run_ports_check():
     #search risky ports
@@ -48,6 +48,21 @@ def run_services_check():
 def report(r_name, audit_data):
     rprt.save_report(r_name, audit_data)
 
+def run_hardening_check(audit):
+    for key, settings in audit.items():
+        recommandations={"ssh":reco.get_ssh_recommandations(settings),
+                     "firewall":reco.get_firewall_recommandations(settings),
+                     "ports":reco.get_firewall_recommandations(settings),
+                     "suid":reco.get_suid_recommandations(settings),
+                     "permissions":reco.get_permissions_recommandations(settings),
+                     "services":reco.get_services_recommandations(settings)
+                    }
+
+        if key not in recommandations:
+            continue
+        audit[key]=recommandations[key]
+    
+    return audit 
 
 def scoring(report_f):
     out_report=scor.read_report(report_f)
@@ -117,7 +132,8 @@ def main():
             "Examples:\n"
             "  python3 audit.py --scan all --output report.json\n"
             "  python3 audit.py --scan ssh --output ssh_report.json\n"
-            "  python3 audit.py --scan ports\n"))
+            "  python3 audit.py --scan ports\n"
+            "  python3 audit.py --scan firewall --hardening-check\n"))
 
     parser.add_argument("-s", "--scan",
                         required=True,
@@ -135,6 +151,11 @@ def main():
                         metavar="FILE",
                         default="report.json",
                         help="Output filename.json to create a report.")
+    
+    parser.add_argument("--hardening_check",
+                        action='store_true',
+                        help="Recommendations for remediation.")
+
     args = parser.parse_args()
 
     if args.scan=="all" and args.output :
@@ -142,7 +163,12 @@ def main():
     else:
         audit=run_single_check(args.scan)
 
-    report(args.output, audit)
+    if args.hardening_check:
+        hardening=run_hardening_check(audit)
+        report(args.output, hardening)
+    else: 
+        report(args.output, audit)
+    
     scoring(args.output)
 
 if __name__ == "__main__":
