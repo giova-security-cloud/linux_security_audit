@@ -3,12 +3,12 @@ import logging
 
 
 
-def get_ssh_recommandations(settings: dict) -> list[dict]:
+def get_ssh_recommendations(settings: dict) -> list[dict]:
     if "no" not in settings["PermitRootLogin"]:
         settings["PermitRootLogin"]={
                                      "status":"FAIL",
                                      "expected": "no",
-                                     "recommandations": "Set PermitRootLogin to no",
+                                     "recommendations": "Set PermitRootLogin to no",
                                      "severity": "HIGH"
                                     }
     else:
@@ -21,7 +21,7 @@ def get_ssh_recommandations(settings: dict) -> list[dict]:
         settings["PasswordAuthentication"]={
                                             "status":"FAIL",
                                             "expected": "no",
-                                            "recommandations": "Set PasswordAuthentication to no",
+                                            "recommendations": "Set PasswordAuthentication to no",
                                             "severity": "HIGH"
                                            }
     else:
@@ -55,7 +55,7 @@ def get_ssh_recommandations(settings: dict) -> list[dict]:
     return settings
 
 
-def get_firewall_recommandations(settings: dict) -> list[dict]:
+def get_firewall_recommendations(settings: dict) -> list[dict]:
      
     if "ufw" in settings["tool_detected"]:
         
@@ -63,7 +63,7 @@ def get_firewall_recommandations(settings: dict) -> list[dict]:
             settings["status"]={
                                "status":"FAIL",
                                "expected":"active",
-                               "recommandations":"Enable ufw firewall",
+                               "recommendations":"Enable ufw firewall",
                                "severity":"HIGH"
                                }
 
@@ -71,12 +71,12 @@ def get_firewall_recommandations(settings: dict) -> list[dict]:
             settings["rules_count"]={
                                      "status":"FAIL",
                                      "expected": "no",
-                                     "recommandations1": "Set Default Incoming policy to DENY",
-                                     "recommandations2": "Set Default Outgoing policy to ALLOW",
-                                     "recommandations3": "Allow SSH port 22",
-                                     "recommandations4": "Deny Telnet port 23",
-                                     "recommandations5": "Deny FTP port 21",
-                                     "recommandations6": "Enable firewall logging",
+                                     "recommendations1": "Set Default Incoming policy to DENY",
+                                     "recommendations2": "Set Default Outgoing policy to ALLOW",
+                                     "recommendations3": "Allow SSH port 22",
+                                     "recommendations4": "Deny Telnet port 23",
+                                     "recommendations5": "Deny FTP port 21",
+                                     "recommendations6": "Enable firewall logging",
                                      "severity": "HIGH"
                                     }
 
@@ -87,18 +87,18 @@ def get_firewall_recommandations(settings: dict) -> list[dict]:
             settings["status"]={
                                "status":"FAIL",
                                "expected":"active",
-                               "recommandations":"Enable firewalld on boot",
+                               "recommendations":"Enable firewalld on boot",
                                "severity":"HIGH"
                                }
 
         if settings["rules_count"] == 0:
             settings["rules_count"]={
                                      "status":"FAIL",
-                                     "recommandations1": "Set Default Zone to DROP",
-                                     "recommandations2": "Allow SSH service",
-                                     "recommandations3": "Remove Telnet service",
-                                     "recommandations4": "Remove FTP service",
-                                     "recommandations5": "Remove unnecessary DHCPv6 client",
+                                     "recommendations1": "Set Default Zone to DROP",
+                                     "recommendations2": "Allow SSH service",
+                                     "recommendations3": "Remove Telnet service",
+                                     "recommendations4": "Remove FTP service",
+                                     "recommendations5": "Remove unnecessary DHCPv6 client",
                                      "severity": "HIGH"
                                     }
 
@@ -107,34 +107,34 @@ def get_firewall_recommandations(settings: dict) -> list[dict]:
         if settings["rules_count"] == 0:
             settings["rules_count"]={
                                      "status":"FAIL",
-                                     "recommandations1": "Set Default INPUT policy to DROP",
-                                     "recommandations2": "Set Default FORWARD policy to DROP",
-                                     "recommandations3": "Allow loopback interface",
-                                     "recommandations4": "Allow established and related connections",
-                                     "recommandations5": "Allow SSH port 22",
-                                     "recommandations6": "Deny Telnet port 23",
-                                     "recommandations7": "Deny FTP port 21",
+                                     "recommendations1": "Set Default INPUT policy to DROP",
+                                     "recommendations2": "Set Default FORWARD policy to DROP",
+                                     "recommendations3": "Allow loopback interface",
+                                     "recommendations4": "Allow established and related connections",
+                                     "recommendations5": "Allow SSH port 22",
+                                     "recommendations6": "Deny Telnet port 23",
+                                     "recommendations7": "Deny FTP port 21",
                                      "severity": "HIGH"
                                     }
     
     return settings
 
 
-def get_ports_recommandations(settings: dict) -> list[dict]:
+def get_ports_recommendations(settings: dict) -> list[dict]:
     
     return settings
 
 
-def get_suid_recommandations(settings: dict) -> list[dict]:
+def get_suid_recommendations(settings: dict) -> list[dict]:
     
     return settings
 
 
-def get_permissions_recommandations(settings: dict) -> list[dict]:
+def get_permissions_recommendations(settings: dict) -> list[dict]:
     
     return settings
 
 
-def get_services_recommandations(settings: dict) -> list[dict]:
+def get_services_recommendations(settings: dict) -> list[dict]:
     
     return settings

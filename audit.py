@@ -9,7 +9,7 @@ import checks.permissions_check as prmf
 import checks.services_check as srvcs 
 import reports.reporter as rprt
 import utils.scoring as scor
-import utils.recommandations as reco
+import utils.recommendations as reco
 
 
 def run_ssh_check():
@@ -52,19 +52,19 @@ def report(r_name, audit_data):
 def run_hardening_check(audit):
     for key, settings in audit.items():
 
-        recommandations={"ssh":reco.get_ssh_recommandations,
-                         "firewall":reco.get_firewall_recommandations,
-                         "ports":reco.get_ports_recommandations,
-                         "suid":reco.get_suid_recommandations,
-                         "permissions":reco.get_permissions_recommandations,
-                         "services":reco.get_services_recommandations
+        recommendations={"ssh":reco.get_ssh_recommendations,
+                         "firewall":reco.get_firewall_recommendations,
+                         "ports":reco.get_ports_recommendations,
+                         "suid":reco.get_suid_recommendations,
+                         "permissions":reco.get_permissions_recommendations,
+                         "services":reco.get_services_recommendations
                         }
 
-        if key not in recommandations:
+        if key not in recommendations:
             continue
         
 
-        audit[key]=recommandations[key](settings)
+        audit[key]=recommendations[key](settings)
     
     return audit 
 
