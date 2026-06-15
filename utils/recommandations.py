@@ -51,15 +51,72 @@ def get_ssh_recommandations(settings: dict) -> list[dict]:
     else:
          settings["ClientAliveInterval"]={
                                           "status": "PASS",
-                                         }
-
-         
-    
+                                         } 
     return settings
 
 
 def get_firewall_recommandations(settings: dict) -> list[dict]:
-      
+     
+    if "ufw" in settings["tool_detected"]:
+        
+        if "active" not in settings["status"]:
+            settings["status"]={
+                               "status":"FAIL",
+                               "expected":"active",
+                               "recommandations":"Enable ufw firewall",
+                               "severity":"HIGH"
+                               }
+
+        if settings["rules_count"] == 0:
+            settings["rules_count"]={
+                                     "status":"FAIL",
+                                     "expected": "no",
+                                     "recommandations1": "Set Default Incoming policy to DENY",
+                                     "recommandations2": "Set Default Outgoing policy to ALLOW",
+                                     "recommandations3": "Allow SSH port 22",
+                                     "recommandations4": "Deny Telnet port 23",
+                                     "recommandations5": "Deny FTP port 21",
+                                     "recommandations6": "Enable firewall logging",
+                                     "severity": "HIGH"
+                                    }
+
+
+    if "firewalld" in settings["tool_detected"]:
+       
+        if "active" not in settings["status"]:
+            settings["status"]={
+                               "status":"FAIL",
+                               "expected":"active",
+                               "recommandations":"Enable firewalld on boot",
+                               "severity":"HIGH"
+                               }
+
+        if settings["rules_count"] == 0:
+            settings["rules_count"]={
+                                     "status":"FAIL",
+                                     "recommandations1": "Set Default Zone to DROP",
+                                     "recommandations2": "Allow SSH service",
+                                     "recommandations3": "Remove Telnet service",
+                                     "recommandations4": "Remove FTP service",
+                                     "recommandations5": "Remove unnecessary DHCPv6 client",
+                                     "severity": "HIGH"
+                                    }
+
+
+    if "iptables" in settings["tool_detected"]:
+        if settings["rules_count"] == 0:
+            settings["rules_count"]={
+                                     "status":"FAIL",
+                                     "recommandations1": "Set Default INPUT policy to DROP",
+                                     "recommandations2": "Set Default FORWARD policy to DROP",
+                                     "recommandations3": "Allow loopback interface",
+                                     "recommandations4": "Allow established and related connections",
+                                     "recommandations5": "Allow SSH port 22",
+                                     "recommandations6": "Deny Telnet port 23",
+                                     "recommandations7": "Deny FTP port 21",
+                                     "severity": "HIGH"
+                                    }
+    
     return settings
 
 
