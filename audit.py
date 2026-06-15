@@ -51,17 +51,20 @@ def report(r_name, audit_data):
 
 def run_hardening_check(audit):
     for key, settings in audit.items():
-        recommandations={"ssh":reco.get_ssh_recommandations(settings),
-                     "firewall":reco.get_firewall_recommandations(settings),
-                     "ports":reco.get_firewall_recommandations(settings),
-                     "suid":reco.get_suid_recommandations(settings),
-                     "permissions":reco.get_permissions_recommandations(settings),
-                     "services":reco.get_services_recommandations(settings)
-                    }
+
+        recommandations={"ssh":reco.get_ssh_recommandations,
+                         "firewall":reco.get_firewall_recommandations,
+                         "ports":reco.get_ports_recommandations,
+                         "suid":reco.get_suid_recommandations,
+                         "permissions":reco.get_permissions_recommandations,
+                         "services":reco.get_services_recommandations
+                        }
 
         if key not in recommandations:
             continue
-        audit[key]=recommandations[key]
+        
+
+        audit[key]=recommandations[key](settings)
     
     return audit 
 
