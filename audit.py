@@ -1,3 +1,4 @@
+# audit.py
 import argparse
 import logging
 import checks.ssh_check as sshp 
@@ -152,7 +153,7 @@ def main():
                         default="report.json",
                         help="Output filename.json to create a report.")
     
-    parser.add_argument("--hardening_check",
+    parser.add_argument('--hardening-check',
                         action='store_true',
                         help="Recommendations for remediation.")
 
