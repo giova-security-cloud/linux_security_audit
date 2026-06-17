@@ -70,15 +70,16 @@ def get_firewall_recommendations(settings: dict) -> list[dict]:
         if settings["rules_count"] == 0:
             settings["rules_count"]={
                                      "status":"FAIL",
-                                     "expected": "no",
-                                     "recommendations1": "Set Default Incoming policy to DENY",
-                                     "recommendations2": "Set Default Outgoing policy to ALLOW",
-                                     "recommendations3": "Allow SSH port 22",
-                                     "recommendations4": "Deny Telnet port 23",
-                                     "recommendations5": "Deny FTP port 21",
-                                     "recommendations6": "Enable firewall logging",
-                                     "severity": "HIGH"
-                                    }
+                                     "recommendations": {
+                                                         "default deny ":"Set Default Incoming policy to DENY " 
+                                                         "default allow":"Set Default Outgoing policy to ALLOW "
+                                                         "ssh": "Allow SSH port 22 "
+                                                         "Telnet": "Deny Telnet port 23 "
+                                                         "ftp": "Deny FTP port 21 "
+                                                         "logging": "Enable firewall logging."
+                                                         },
+                                     "severity": "HIGH" 
+                                     }
 
 
     if "firewalld" in settings["tool_detected"]:
@@ -94,26 +95,29 @@ def get_firewall_recommendations(settings: dict) -> list[dict]:
         if settings["rules_count"] == 0:
             settings["rules_count"]={
                                      "status":"FAIL",
-                                     "recommendations1": "Set Default Zone to DROP",
-                                     "recommendations2": "Allow SSH service",
-                                     "recommendations3": "Remove Telnet service",
-                                     "recommendations4": "Remove FTP service",
-                                     "recommendations5": "Remove unnecessary DHCPv6 client",
+                                     "recommendations": {
+                                                         "default": "Set Default Zone to DROP"
+                                                         "ssh": "Allow SSH service"
+                                                         "Telnet": "Remove Telnet service"
+                                                         "ftp": "Remove FTP service"
+                                                         "dhcpv6":"Remove unnecessary DHCPv6 client"
+                                                         },
                                      "severity": "HIGH"
                                     }
-
 
     if "iptables" in settings["tool_detected"]:
         if settings["rules_count"] == 0:
             settings["rules_count"]={
                                      "status":"FAIL",
-                                     "recommendations1": "Set Default INPUT policy to DROP",
-                                     "recommendations2": "Set Default FORWARD policy to DROP",
-                                     "recommendations3": "Allow loopback interface",
-                                     "recommendations4": "Allow established and related connections",
-                                     "recommendations5": "Allow SSH port 22",
-                                     "recommendations6": "Deny Telnet port 23",
-                                     "recommendations7": "Deny FTP port 21",
+                                     "recommendations": {
+                                                         "default input": "Set Default INPUT policy to DROP"
+                                                         "default forward":"Set Default FORWARD policy to DROP"
+                                                         "loopback": "Allow loopback interface"
+                                                         "established": "Allow established and related connections"
+                                                         "ssh": "Allow SSH port 22"
+                                                         "telnet": "Deny Telnet port 23"
+                                                         "ftp": "Deny FTP port 21"
+                                                         },
                                      "severity": "HIGH"
                                     }
     
