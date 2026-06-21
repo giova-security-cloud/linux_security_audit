@@ -2,6 +2,7 @@
 
 import subprocess
 import re
+from utils.logger import logger
 
 RISKY_PORTS = {
     21:   "FTP unencrypted file transfer",
@@ -49,11 +50,11 @@ def parse_ss(output: str) -> list[dict]:
         port = int(match.group(1))
 
         ports.append({
-            "port":     port,
-            "proto":    proto.lower(),
-            "state":    state.lower(),
-            "address":  local,
-        })
+                      "port":     port,
+                      "proto":    proto.lower(),
+                      "state":    state.lower(),
+                      "address":  local,
+                    })
     return ports
 
 
@@ -66,11 +67,11 @@ def parse_nmap(output: str) -> list[dict]:
         if not match:
             continue
         ports.append({
-            "port":    int(match.group(1)),
-            "proto":   match.group(2),
-            "state":   match.group(3),
-            "service": match.group(4).strip(),
-        })
+                      "port":    int(match.group(1)),
+                      "proto":   match.group(2),
+                      "state":   match.group(3),
+                      "service": match.group(4).strip(),
+                    })
     return ports
 
 
@@ -87,13 +88,13 @@ def flag_risks(ports: list[dict]) -> list[dict]:
 
 def ports_audit() -> dict:
     result = {
-        "method":       None,
-        "open_ports":   [],
-        "risky_ports":  [],
-        "total_open":   0,
-        "audit_score": 0,
-        "error":        None,
-    }
+              "method":       None,
+              "open_ports":   [],
+              "risky_ports":  [],
+              "total_open":   0,
+              "audit_score": 0,
+              "error":        None,
+             }
 
     ports = []
 
@@ -108,6 +109,7 @@ def ports_audit() -> dict:
         result["method"] = "ss"
 
     except (subprocess.CalledProcessError, FileNotFoundError):
+        logger.error("ports_check : ss - FileNotFoundError")
         pass
 
     # ── Method 2: nmap as fallback ───────────────────────────────────────────
@@ -123,13 +125,14 @@ def ports_audit() -> dict:
 
         except (subprocess.CalledProcessError, FileNotFoundError):
             result["error"] = "ss and nmap are both unavailable on this system"
+            logger.error("ports_check : nmap - FileNotFoundError")
             return result
 
     # ── Risk analysis ────────────────────────────────────────────────────────
     ports = flag_risks(ports)
 
     risky = [p for p in ports if p["risk"]]
-
+    logger.info(f"ports_check - risky ports : {len(risky)}")
     result["open_ports"]  = ports
     result["risky_ports"] = risky
     result["total_open"]  = len(ports)
@@ -137,7 +140,7 @@ def ports_audit() -> dict:
     # Score: -10 per risky port, capped at -50
     penalty = min(len(risky) * 10, 50)
     result["audit_score"] = -penalty
-    
+        
     return result
 
 

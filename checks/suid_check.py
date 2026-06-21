@@ -2,6 +2,7 @@
 import subprocess
 import os
 import stat
+from utils.logger import logger
 
 # Legitimate SUID binaries present on most Linux systems
 SUID_WHITELIST = {
@@ -85,11 +86,11 @@ def scan_suid_files(root: str = "/") -> list[dict]:
             whitelisted = filepath in SUID_WHITELIST
 
             suid_files.append({
-                "path":        filepath,
-                "owner_uid":   owner_uid,
-                "whitelisted": whitelisted,
-                "suspicious":  not whitelisted,
-            })
+                               "path":        filepath,
+                               "owner_uid":   owner_uid,
+                               "whitelisted": whitelisted,
+                               "suspicious":  not whitelisted,
+                             })
 
     return suid_files
 
@@ -107,6 +108,7 @@ def suid_audit(root: str = "/") -> dict:
     try:
         suid_files = scan_suid_files(root)
     except PermissionError as e:
+        logger.error("Permission denied during scan.")
         result["error"] = f"Permission denied during scan: {e}"
         return result
 
@@ -117,6 +119,8 @@ def suid_audit(root: str = "/") -> dict:
     result["total_suid"]       = len(suid_files)
     result["total_suspicious"] = len(suspicious)
 
+    logger.info(f"suid_check - suspicious files : {len(suspicious)}")
+    
     # Score: -20 per suspicious SUID file, capped at -60
     penalty = min(len(suspicious) * 20, 60)
     result["audit_score"] = -penalty

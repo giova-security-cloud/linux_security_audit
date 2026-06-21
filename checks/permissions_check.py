@@ -3,6 +3,7 @@
 import os
 import stat
 import glob
+from utils.logger import logger
 
 # Critical files with their expected permissions and owner
 # Format: "path": {"expected_mode": octal, "expected_uid": int, "expected_gid": int}
@@ -112,6 +113,7 @@ def get_octal_mode(filepath: str) -> int | None:
     try:
         return stat.S_IMODE(os.stat(filepath).st_mode)
     except (PermissionError, FileNotFoundError, OSError):
+        logger.error("PermissionError, FileNotFoundError, OSError")
         return None
 
 
@@ -121,6 +123,7 @@ def get_owner(filepath: str) -> tuple[int, int] | None:
         s = os.stat(filepath)
         return s.st_uid, s.st_gid
     except (PermissionError, FileNotFoundError, OSError):
+        logger.error("PermissionError, FileNotFoundError, OSError")
         return None
 
 
@@ -187,14 +190,14 @@ def audit_file(filepath: str, expected: dict) -> dict:
         issues.append("World-readable: sensitive file exposed to all users")
 
     return {
-        "path":        filepath,
-        "description": expected.get("description", ""),
-        "status":      "ok" if not issues else "issues_found",
-        "issues":      issues,
-        "mode":        oct(mode),
-        "uid":         uid,
-        "gid":         gid,
-    }
+            "path":        filepath,
+            "description": expected.get("description", ""),
+            "status":      "ok" if not issues else "issues_found",
+            "issues":      issues,
+            "mode":        oct(mode),
+            "uid":         uid,
+            "gid":         gid,
+           }
 
 
 def collect_dir_files(dirpath: str, expected: dict) -> list[dict]:
@@ -210,6 +213,7 @@ def collect_dir_files(dirpath: str, expected: dict) -> list[dict]:
             if os.path.isfile(filepath):
                 results.append(audit_file(filepath, expected))
     except PermissionError:
+        logger.error("PermissionError")
         pass
 
     return results
@@ -217,16 +221,16 @@ def collect_dir_files(dirpath: str, expected: dict) -> list[dict]:
 
 def permissions_audit() -> dict:
     result = {
-        "files":            [],
-        "total_checked":    0,
-        "total_issues":     0,
-        "world_writable":   [],
-        "world_readable":   [],
-        "wrong_owner":      [],
-        "wrong_mode":       [],
-        "audit_score":     0,
-        "error":            None,
-    }
+              "files":            [],
+              "total_checked":    0,
+              "total_issues":     0,
+              "world_writable":   [],
+              "world_readable":   [],
+              "wrong_owner":      [],
+              "wrong_mode":       [],
+              "audit_score":     0,
+              "error":            None,
+             }
 
     audited = []
 
@@ -256,7 +260,9 @@ def permissions_audit() -> dict:
     result["files"]         = audited
     result["total_checked"] = len(audited)
     result["total_issues"]  = len(files_with_issues)
-
+    
+    logger.info(f"permissions - files with issues : {len(files_with_issues)}")
+    
     # Score:
     # -15 per world-writable file (critical risk)
     # -10 per wrong owner
@@ -264,11 +270,12 @@ def permissions_audit() -> dict:
     # -5  per world-readable sensitive file
     # Capped at -60
     penalty = (
-        len(result["world_writable"]) * 15 +
-        len(result["wrong_owner"])    * 10 +
-        len(result["wrong_mode"])     *  5 +
-        len(result["world_readable"]) *  5
-    )
+               len(result["world_writable"]) * 15 +
+               len(result["wrong_owner"])    * 10 +
+               len(result["wrong_mode"])     *  5 +
+               len(result["world_readable"]) *  5
+              )
+
     result["audit_score"] = -min(penalty, 60)
     
     return result

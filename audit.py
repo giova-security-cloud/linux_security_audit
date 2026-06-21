@@ -112,6 +112,8 @@ def run_all_check():
 def run_single_check(check):
     """Run ssh security check and return the audit result"""
     
+    logger.info(f"Running {check} check ...")
+    
     checks={"ssh": run_ssh_check,
             "firewall": run_firewall_check,
             "ports": run_ports_check,
@@ -125,7 +127,8 @@ def run_single_check(check):
         logger.error(f"[*] Here is the checks list available {", ".join(checks.keys())}.")
         exit(1)
     
-    logger.info(f"[+] {check} score : {checks[check]().get("audit_score")}")
+    logger.info(f"{check} score : {checks[check]().get("audit_score")}")
+    logger.info(f"{check} check Done.")
     return {check:checks[check]()}
 
 

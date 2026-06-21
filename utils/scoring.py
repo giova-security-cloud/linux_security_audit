@@ -3,16 +3,17 @@ import getopt
 import socket
 import os
 import json
+from utils.logger import logger
 
 def read_report(filename):
-    print(f"[+] Reading the report : {filename}")
+    logger.info(f"Reading the report : {filename}")
     try: 
         with open(os.path.join("/home/gclaude/linux_security_audit/reports/", str(filename)), "r", encoding="utf-8") as json_f:
             report=json.load(json_f)
             return report
 
     except OSerror:
-        print("Could not open the report file.")
+        logger.error("Could not open the report file.")
         sys.exit()
 
 

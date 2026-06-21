@@ -3,7 +3,7 @@
 import os
 import subprocess
 import logging
-
+from utils.logger import logger
 
 
 def get_ssh_recommendations(settings: dict) -> list[dict]:
@@ -349,8 +349,8 @@ def get_ports_recommendations(settings: dict) -> list[dict]:
         if not recs:
             continue
 
-        print(f"\n{label} Port {port} to {service}")
-        print(f"  Recommendation: {recs['recommendation']}")
+        logger.info(f"\n{label} Port {port} to {service}")
+        logger.info(f"  Recommendation: {recs['recommendation']}")
         
         rec_l.append({
                      "target":         port,

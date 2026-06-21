@@ -1,17 +1,18 @@
 # check/firewall_check.py
 
 import subprocess
+from utils.logger import logger
 
 RISKY_PORTS = {22, 23, 3389, 5900, 21, 25, 110, 3306, 5432}
 
 def firewall_audit():
     display_score=0
     result = {
-        "tool_detected": None,
-        "status": "inactive",
-        "rules_count": 0,
-        "audit_score": 0
-    }
+              "tool_detected": None,
+              "status": "inactive",
+              "rules_count": 0,
+              "audit_score": 0
+             }
 
     for tool in ["ufw", "firewalld", "iptables"]:
         try:
