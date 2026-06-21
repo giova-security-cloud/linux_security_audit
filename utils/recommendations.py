@@ -433,10 +433,90 @@ def get_suid_recommendations(settings: dict) -> list[dict]:
 
 
 def get_permissions_recommendations(settings: dict) -> list[dict]:
-    
+    PERMISSIONS_ISSUE_DATA = {
+    "world_writable": {
+                       "severity": "critical",
+                       "text": (
+                                "This file is writable by any user. Remove write access "
+                                "for others: 'chmod o-w <path>'."
+                               ),
+                      },
+    "world_readable": {
+                       "severity": "high",
+                       "text": (
+                                "This sensitive file is readable by any user, risking "
+                                "credential exposure. Restrict access: 'chmod o-r <path>'."
+                               ),
+                      },
+    "wrong_owner": {
+                    "severity": "high",
+                    "text": (
+                             "File owner does not match the expected system owner. "
+                             "Restore it: 'chown root:root <path>'."
+                            ),
+                   },
+    "wrong_mode": {
+                   "severity": "medium",
+                   "text": "Permission bits do not match the secure baseline. Review and correct.",
+                  },
+                  }
+    """
+    Args:
+       settings: settings["permissions"] - the raw output of run_permissions_check()
+    Returns:
+        list of recommendation dicts, sorted by severity
+    """
+    recs = []
+
+    mapping = {
+               "world_writable": settings.get("world_writable", []),
+               "world_readable": settings.get("world_readable", []),
+               "wrong_owner":    settings.get("wrong_owner", []),
+               "wrong_mode":     settings.get("wrong_mode", []),
+              }
+
+    for issue_type, paths in mapping.items():
+        data = PERMISSIONS_ISSUE_DATA[issue_type]
+        for path in paths:
+            recs.append({
+                          "target":         path,
+                          "severity":       data["severity"],
+                          "recommendation": data["text"],
+                          "actions":        [],
+                       })
+
+    settings["recommendations"]=recs
+
     return settings
 
 
 def get_services_recommendations(settings: dict) -> list[dict]:
+    """
+    Args:
+        settings: settings["services"] - the raw output of run_services_check()
+    Returns:
+        list of recommendation dicts, sorted by severity
+    """
+    risky_services = settings.get("risky_services", [])
+    recs = []
+
+    for entry in risky_services:
+        service = entry["service"]
+        data = SERVICES_DATA.get(service.lower(), {
+                                                   "severity": "medium",
+                                                   "text": "Review whether this service is necessary and properly secured.",
+               })
+
+        recs.append({
+            "target":         service,
+            "severity":       data["severity"],
+            "recommendation": data["text"],
+            "actions": [
+                ["systemctl", "stop", service],
+                ["systemctl", "disable", service],
+            ],
+        })
+
+    settings["recommendations"]=recs
     
     return settings
