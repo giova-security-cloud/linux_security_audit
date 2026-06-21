@@ -10,7 +10,7 @@ import checks.services_check as srvcs
 import reports.reporter as rprt
 import utils.scoring as scor
 import utils.recommendations as reco
-
+from   utils.logger import logger
 
 def run_ssh_check():
    #search ssh parameters
@@ -71,9 +71,9 @@ def run_hardening_check(audit):
 def scoring(report_f):
     out_report=scor.read_report(report_f)
     score=scor.make_score(out_report)
-    print(f"\n{'='*40}")
-    print(f"  Security Score : {str(score)} / 100")
-    print(f"{'='*40}\n")
+    logger.info(f"{'='*40}")
+    logger.info(f"  Security Score : {str(score)} / 100")
+    logger.info(f"{'='*40}\n")
 
 
 def run_all_check():
@@ -85,27 +85,27 @@ def run_all_check():
            "suid":{},
            "permissions":{},
            "services":{}
-            }
+          }
 
-    print("[*] Starting security audit...\n")
-    print("[*] Running SSH check...")
+    logger.info("[*] Starting security audit...\n")
+    logger.info("[*] Running SSH check...")
     audit["ssh"]=run_ssh_check()
-    print("[*] SSH check Done.")
-    print("[*] Running Firewall check...")
+    logger.info("[*] SSH check Done.")
+    logger.info("[*] Running Firewall check...")
     audit["firewall"]=run_firewall_check()
-    print("[*] Firewall check Done.")
-    print("[*] Running Ports check...")
+    logger.info("[*] Firewall check Done.")
+    logger.info("[*] Running Ports check...")
     audit["ports"]=run_ports_check()
-    print("[*] Ports check Done.")
-    print("[*] Running SUID Files check...")
+    logger.info("[*] Ports check Done.")
+    logger.info("[*] Running SUID Files check...")
     audit["suid"]=run_suid_check()
-    print("[*] SUID Files check Done.")
-    print("[*] Running Permissions Files check...")
+    logger.info("[*] SUID Files check Done.")
+    logger.info("[*] Running Permissions Files check...")
     audit["permissions"]=run_permissions_check()
-    print("[*] Permission Files check Done.")
-    print("[*] Running Services check...")
+    logger.info("[*] Permission Files check Done.")
+    logger.info("[*] Running Services check...")
     audit["services"]=run_services_check()
-    print("[*] Services check Done.")
+    logger.info("[*] Services check Done.")
     
     return audit
 
@@ -121,11 +121,11 @@ def run_single_check(check):
             }
 
     if check not in checks:
-        print(f"[-] The selected check '{check}' is not covered.")
-        print(f"[*] Here is the checks list available {", ".join(checks.keys())}.")
+        logger.error(f"[-] The selected check '{check}' is not covered.")
+        logger.error(f"[*] Here is the checks list available {", ".join(checks.keys())}.")
         exit(1)
     
-    print(f"[+] {check} score : {checks[check]().get("audit_score")}")
+    logger.info(f"[+] {check} score : {checks[check]().get("audit_score")}")
     return {check:checks[check]()}
 
 

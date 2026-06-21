@@ -4,6 +4,7 @@ import os
 import struct
 import fnmatch
 import subprocess
+from   utils.logger import logger
 
 def ssh_file_search():
     #Search sshd config file
@@ -13,12 +14,12 @@ def ssh_file_search():
             sshconf=subprocess.Popen([ssh_path], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             routput,rerror=sshconf.communicate()
             if rerror:
-                print("error while searching configuration ssh file.")
+                logger.error("error while searching configuration ssh file.")
                 return rerror
             if os.path.isfile(routput):    
                 return routput
     except OSError as e:
-        print(f"Error checking file: {e}")
+        logger.error(f"Error checking file: {e}")
 
 def ssh_audit(search):
     try:
@@ -56,6 +57,7 @@ def ssh_audit(search):
         return ssh_report 
     
     except FileNotFoundError:
-        return {"error" : "sshd_config file not found"}
+        return logger.error("sshd_config file not found")
+
 
 
