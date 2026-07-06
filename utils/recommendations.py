@@ -15,6 +15,7 @@ def get_ssh_recommendations(settings: dict) -> list[dict]:
                                      "severity": "HIGH"
                                     }
     else:
+         logger.warning("PermitRootlogin Enabled")
          settings["PermitRootLogin"]={
                                       "value":"no",
                                       "status": "PASS",
@@ -28,6 +29,7 @@ def get_ssh_recommendations(settings: dict) -> list[dict]:
                                             "severity": "HIGH"
                                            }
     else:
+         logger.warning("PasswordAuthentication Enabled")
          settings["PasswordAuthentication"]={ 
                                           "value": "no",
                                           "status": "PASS"

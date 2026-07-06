@@ -2,7 +2,6 @@
 
 import logging
 import os
-from pathlib import Path
 
 
 LOG_DIR = "logs"
