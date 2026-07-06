@@ -57,7 +57,7 @@ def ssh_audit(search):
         return ssh_report 
     
     except FileNotFoundError:
-        return logger.error("sshd_config file not found")
+        return logger.error("Unable to read sshd_config")
 
 
 

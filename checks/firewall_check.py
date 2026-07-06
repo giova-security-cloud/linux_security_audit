@@ -48,5 +48,8 @@ def firewall_audit():
 
         except (subprocess.CalledProcessError, FileNotFoundError):
             continue
+   
+    if result["rules_count"] == 0:
+        logger.warning("Firewall does not have rules")
     
     return result
